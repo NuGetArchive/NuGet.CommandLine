@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{21D5CAC7-8023-4A18-AA22-6630F24FA931}</ProjectGuid>
+    <ProjectGuid>{D63BFFBA-DC3F-4A10-B17D-3D88D385DD67}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NuGet.CommandLine</RootNamespace>
