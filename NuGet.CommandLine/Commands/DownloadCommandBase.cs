@@ -32,13 +32,17 @@ namespace NuGet.CommandLine.Commands
 
         [Option(typeof(NuGetCommandResourceType), "CommandPackageSaveMode")]
         public string PackageSaveMode { get; set; }
-        
+
         protected void CalculateEffectivePackageSaveMode()
         {
             string packageSaveModeValue = PackageSaveMode;
             if (string.IsNullOrEmpty(packageSaveModeValue))
             {
-                packageSaveModeValue = Settings.GetSettingValues("PackageSaveMode").FirstOrDefault().Value;
+                var settingValue = Settings.GetSettingValues("PackageSaveMode");
+                if (settingValue.Any())
+                {
+                    packageSaveModeValue = settingValue.FirstOrDefault().Value;
+                }
             }
 
             EffectivePackageSaveMode = PackageSaveModes.None;

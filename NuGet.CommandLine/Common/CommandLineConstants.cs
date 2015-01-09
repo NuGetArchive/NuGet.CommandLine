@@ -9,5 +9,7 @@
         internal static string NuGetDocsCommandLineReference = "http://docs.nuget.org/docs/reference/command-line-reference";
 
         internal static string PackagesDirectoryName = "packages";
+
+        internal static string ConfigSection = "config";
     }
 }

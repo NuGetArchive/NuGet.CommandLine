@@ -324,54 +324,38 @@ namespace NuGet.CommandLine.Common
                 throw new InvalidOperationException(LocalizedResourceManager.GetString("Error_CannotPromptForInput"));
             }
         }
-
-        public void Log(MessageLevel level, string message, params object[] args)
+        private ConsoleColor GetConsoleColor(MessageLevel level)
         {
             switch (level)
             {
-                case MessageLevel.Info:
-                    WriteLine(message, args);
-                    break;
-                case MessageLevel.Warning:
-                    WriteWarning(message, args);
-                    break;
                 case MessageLevel.Debug:
-                    WriteColor(Out, ConsoleColor.Gray, message, args);
-                    break;
+                    return ConsoleColor.Gray;
+
+                case MessageLevel.Error:
+                    return ConsoleColor.Red;
+
+                case MessageLevel.Info:
+                    return ConsoleColor.White;
+
+                case MessageLevel.Warning:
+                    return ConsoleColor.Yellow;
+
+                default:
+                    return ConsoleColor.White;
             }
+        }
+
+        public void Log(MessageLevel level, string message, params object[] args)
+        {
+            var oldColor = System.Console.ForegroundColor;
+            System.Console.ForegroundColor = GetConsoleColor(level);
+            System.Console.WriteLine(message, args);
+            System.Console.ForegroundColor = oldColor;
         }
 
         public FileConflictAction ResolveFileConflict(string message)
         {
-            // make the question stand out from previous text
-            WriteLine();
-
-            WriteLine(ConsoleColor.Yellow, "File Conflict.");
-            WriteLine(message);
-
-            // Yes - Yes To All - No - No To All
-            var acceptedAnswers = new List<string> { "Y", "A", "N", "L" };
-            var choices = new[]
-            {
-                FileConflictAction.Overwrite,
-                FileConflictAction.OverwriteAll,
-                FileConflictAction.Ignore,
-                FileConflictAction.IgnoreAll
-            };
-
-            while (true)
-            {
-                Write(LocalizedResourceManager.GetString("FileConflictChoiceText"));
-                string answer = ReadLine();
-                if (!String.IsNullOrEmpty(answer))
-                {
-                    int index = acceptedAnswers.FindIndex(a => a.Equals(answer, StringComparison.OrdinalIgnoreCase));
-                    if (index > -1)
-                    {
-                        return choices[index];
-                    }
-                }
-            }
+            return FileConflictAction.IgnoreAll;
         }
     }
 }

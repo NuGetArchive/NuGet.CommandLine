@@ -1,5 +1,7 @@
-﻿using NuGet.CommandLine.Commands;
+﻿using NuGet.Client;
+using NuGet.CommandLine.Commands;
 using NuGet.CommandLine.Common;
+using NuGet.PackageManagement;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
@@ -18,11 +20,13 @@ namespace NuGet.CommandLine
 
         public HelpCommand HelpCommand { get; set; }
 
-        [ImportMany]
+        [ImportMany(AllowRecomposition = true)]
         public IEnumerable<ICommand> Commands { get; set; }
 
         [Import]
         public ICommandManager Manager { get; set; }
+
+     
 
         /// <summary>
         /// Flag meant for unit tests that prevents command line extensions from being loaded.
@@ -151,20 +155,19 @@ namespace NuGet.CommandLine
 
         private void Initialize(IConsole console)
         {
-            using (var catalog = new AggregateCatalog(new AssemblyCatalog(GetType().Assembly)))
+            using (var catalog = new AggregateCatalog())
             {
+                catalog.Catalogs.Add(new AssemblyCatalog(GetType().Assembly));
+                catalog.Catalogs.Add(new DirectoryCatalog(Environment.CurrentDirectory, "*.dll"));
                 
                 if (!IgnoreExtensions)
                 {
                     AddExtensionsToCatalog(catalog, console);
                 }
-                using (var container = new CompositionContainer(catalog))
-                {
-                    container.ComposeExportedValue<IConsole>(console);
-                    
-                    container.ComposeParts(this);
-                 
-                }
+
+                var container = new CompositionContainer(catalog);
+                container.ComposeParts(this);
+                container.ComposeExportedValue<IConsole>(console);      
             }
         }
 

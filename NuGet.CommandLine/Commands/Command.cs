@@ -8,6 +8,8 @@ using System.Diagnostics;
 using NuGet.CommandLine.Common;
 using NuGet.Configuration;
 using System.Reflection;
+using NuGet.PackageManagement;
+using NuGet.Client;
 
 namespace NuGet.CommandLine.Commands
 {
@@ -35,6 +37,9 @@ namespace NuGet.CommandLine.Commands
         [Import]
         public IMachineWideSettings MachineWideSettings { get; set; }
 
+        [ImportMany]
+        public IEnumerable<Lazy<INuGetResourceProvider, INuGetResourceProviderMetadata>> ResourceProviders { get; set; }
+
         [Option("help", AltName = "?")]
         public bool Help { get; set; }
 
@@ -48,8 +53,6 @@ namespace NuGet.CommandLine.Commands
         public string ConfigFile { get; set; }
 
         protected internal ISettings Settings { get; set; }
-
-        protected internal IPackageSourceProvider SourceProvider { get; set; }
 
         public CommandAttribute CommandAttribute
         {
