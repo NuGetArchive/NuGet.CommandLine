@@ -116,6 +116,7 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\InstallCommand.cs" />
     <Compile Include="Commands\ListCommand.cs" />
+    <Compile Include="Commands\UpdateCommand.cs" />
     <Compile Include="Common\CommandLineConstants.cs" />
     <Compile Include="Common\CommandLineException.cs" />
     <Compile Include="Common\CommandLineMachineWideSettings.cs" />
@@ -123,6 +124,8 @@
     <Compile Include="Common\Console.cs" />
     <Compile Include="Common\ICommandManager.cs" />
     <Compile Include="Common\IConsole.cs" />
+    <Compile Include="Common\NuGetConstants.cs" />
+    <Compile Include="Common\SelfUpdater.cs" />
     <Compile Include="Common\Verbosity.cs" />
     <Compile Include="NuGetResources.Designer.cs">
       <AutoGen>True</AutoGen>
