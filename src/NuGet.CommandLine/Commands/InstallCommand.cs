@@ -9,7 +9,6 @@ using System;
 using System.ComponentModel.Composition;
 using System.IO;
 
-
 namespace NuGet.CommandLine.Commands
 {
     [Command(typeof(NuGetCommandResourceType), "install", "InstallCommandDescription",
@@ -42,12 +41,13 @@ namespace NuGet.CommandLine.Commands
             CalculateEffectivePackageSaveMode();
             string installPath = ResolveInstallPath();
 
-            var packageSourceProvider = new PackageSourceProvider(Settings);
+            var packageSourceProvider = new NuGet.Configuration.PackageSourceProvider(Settings);
             var sourceRepositoryProvider = new SourceRepositoryProvider(packageSourceProvider, ResourceProviders);
 
             // BUGBUG: Check that the argument is always passed
             string packageId = Arguments[0];
-            NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider);
+            var solutionManager = new SimpleSolutionManager(Environment.CurrentDirectory);
+            NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider, Settings, solutionManager);
             ResolutionContext resolutionContext = new ResolutionContext(dependencyBehavior: DependencyBehavior, includePrelease: Prerelease);
             FolderNuGetProject nugetProject = new FolderNuGetProject(installPath);
             nugetProject.PackageSaveMode = EffectivePackageSaveMode;
