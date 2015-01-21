@@ -298,7 +298,7 @@ namespace NuGet.CommandLine.Commands
 
                 string projectName = Path.GetFileNameWithoutExtension(projectFile);
 
-                installedPackageReferences.AddRange(GetInstalledPackageReferences(projectConfigFilePath));
+                CommandLineHelper.AddRange(installedPackageReferences, GetInstalledPackageReferences(projectConfigFilePath));
             }
 
             return installedPackageReferences;
