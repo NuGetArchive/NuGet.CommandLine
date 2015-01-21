@@ -18,6 +18,7 @@ namespace NuGet.CommandLine
         private const string NuGetExtensionsKey = "NUGET_EXTENSIONS_PATH";
         private static readonly string ExtensionsDirectoryRoot = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "NuGet", "Commands");
 
+        [Import]
         public HelpCommand HelpCommand { get; set; }
 
         [ImportMany(AllowRecomposition = true)]
@@ -166,8 +167,8 @@ namespace NuGet.CommandLine
                 }
 
                 var container = new CompositionContainer(catalog);
+                container.ComposeExportedValue<IConsole>(console);
                 container.ComposeParts(this);
-                container.ComposeExportedValue<IConsole>(console);      
             }
         }
 
