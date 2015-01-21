@@ -46,8 +46,7 @@ namespace NuGet.CommandLine.Commands
 
             // BUGBUG: Check that the argument is always passed
             string packageId = Arguments[0];
-            var solutionManager = new SimpleSolutionManager(Environment.CurrentDirectory);
-            NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider, Settings, solutionManager);
+            NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider, installPath);
             ResolutionContext resolutionContext = new ResolutionContext(dependencyBehavior: DependencyBehavior, includePrelease: Prerelease);
             FolderNuGetProject nugetProject = new FolderNuGetProject(installPath);
             nugetProject.PackageSaveMode = EffectivePackageSaveMode;

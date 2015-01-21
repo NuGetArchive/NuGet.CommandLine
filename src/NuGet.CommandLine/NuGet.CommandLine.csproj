@@ -32,6 +32,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.Build.Engine" />
     <Reference Include="Microsoft.Web.XmlTransform">
       <HintPath>..\..\packages\Microsoft.Web.Xdt.2.1.1\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
     </Reference>
@@ -71,8 +73,9 @@
     <Reference Include="NuGet.Frameworks">
       <HintPath>..\..\packages\NuGet.Packaging.1.0.0-pre-20150120213149\lib\net45\NuGet.Frameworks.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.PackageManagement">
-      <HintPath>..\..\packages\NuGet.PackageManagement.1.0.0-pre-20150121013630\lib\net45\NuGet.PackageManagement.dll</HintPath>
+    <Reference Include="NuGet.PackageManagement, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NuGet.PackageManagement.1.0.0-pre-20150121105529\lib\net45\NuGet.PackageManagement.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Packaging">
       <HintPath>..\..\packages\NuGet.Packaging.1.0.0-pre-20150120213149\lib\net45\NuGet.Packaging.dll</HintPath>
@@ -80,8 +83,9 @@
     <Reference Include="NuGet.PackagingCore">
       <HintPath>..\..\packages\NuGet.Packaging.1.0.0-pre-20150120213149\lib\net45\NuGet.PackagingCore.dll</HintPath>
     </Reference>
-    <Reference Include="NuGet.ProjectManagement">
-      <HintPath>..\..\packages\NuGet.PackageManagement.1.0.0-pre-20150121013630\lib\net45\NuGet.ProjectManagement.dll</HintPath>
+    <Reference Include="NuGet.ProjectManagement, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2e465378e3b1a8dd, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NuGet.PackageManagement.1.0.0-pre-20150121105529\lib\net45\NuGet.ProjectManagement.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Resolver">
       <HintPath>..\..\packages\NuGet.Packaging.1.0.0-pre-20150120213149\lib\net45\NuGet.Resolver.dll</HintPath>
@@ -119,6 +123,7 @@
     <Compile Include="Commands\ICommand.cs" />
     <Compile Include="Commands\InstallCommand.cs" />
     <Compile Include="Commands\ListCommand.cs" />
+    <Compile Include="Commands\RestoreCommand.cs" />
     <Compile Include="Commands\UpdateCommand.cs" />
     <Compile Include="Common\CommandLineConstants.cs" />
     <Compile Include="Common\CommandLineException.cs" />
@@ -148,8 +153,14 @@
     <Compile Include="NuGetCommandResourceType.cs">
       <DependentUpon>NuGetCommandResourceType.resx</DependentUpon>
     </Compile>
+    <Compile Include="SolutionParsers\ISolutionParser.cs" />
+    <Compile Include="SolutionParsers\MSBuildSolutionParser.cs" />
+    <Compile Include="SolutionParsers\ProjectInSolution.cs" />
+    <Compile Include="SolutionParsers\Solution.cs" />
+    <Compile Include="SolutionParsers\XBuildSolutionParser.cs" />
     <Compile Include="Utility\CommandLineHelper.cs" />
     <Compile Include="Utility\CommandLineParser.cs" />
+    <Compile Include="Utility\EnvironmentUtility.cs" />
     <Compile Include="Utility\ExceptionUtility.cs" />
     <Compile Include="Utility\TypeHelper.cs" />
   </ItemGroup>
