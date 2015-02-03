@@ -1,4 +1,5 @@
-﻿using NuGet.PackageManagement;
+﻿using NuGet.Client;
+using NuGet.PackageManagement;
 using NuGet.Packaging;
 using NuGet.ProjectManagement;
 using System;
@@ -116,7 +117,7 @@ namespace NuGet.CommandLine.Commands
             DisplayExecutedTime(watch.Elapsed, "GetMissingPackages");
 
             watch.Restart();
-            PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console).Wait();
+            PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, null, GetSourceRepositories(Source, sourceRepositoryProvider)).Wait();
             watch.Stop();
             DisplayExecutedTime(watch.Elapsed, "RestorePackages");
         }

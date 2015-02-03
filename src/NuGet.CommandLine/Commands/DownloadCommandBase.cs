@@ -1,4 +1,5 @@
-﻿using NuGet.Packaging;
+﻿using NuGet.Client;
+using NuGet.Packaging;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -69,5 +70,50 @@ namespace NuGet.CommandLine.Commands
                 }
             }
         }  
+
+        protected static SourceRepository GetPrimarySourceRepository(ICollection<string> sources,
+            SourceRepositoryProvider sourceRepositoryProvider)
+        {
+            // TODO: Consider adding support for multiple primary repositories
+            string primarySource = null;
+            SourceRepository primarySourceRepository = null;
+            if(sources != null && sources.Any())
+            {
+                primarySource = sources.First();
+            }
+
+            if(!String.IsNullOrEmpty(primarySource))
+            {
+                primarySourceRepository = sourceRepositoryProvider.CreateRepository(new Configuration.PackageSource(primarySource));
+            }
+            else
+            {
+                primarySourceRepository = sourceRepositoryProvider.GetRepositories().Where(s => s.PackageSource.IsEnabled).FirstOrDefault();
+            }
+
+            if(primarySourceRepository == null)
+            {
+                throw new InvalidOperationException(NuGetResources.DownloadCommandBaseNoEnabledPackageSource);
+            }
+
+            return primarySourceRepository;
+        }
+
+        protected static IEnumerable<SourceRepository> GetSourceRepositories(ICollection<string> sources,
+            SourceRepositoryProvider sourceRepositoryProvider)
+        {
+            if (sources != null && sources.Any())
+            {
+                List<SourceRepository> sourceRepositories = new List<SourceRepository>();
+                foreach(var source in sources)
+                {
+                    sourceRepositories.Add(sourceRepositoryProvider.CreateRepository(new NuGet.Configuration.PackageSource(source)));
+                }
+
+                return sourceRepositories;
+            }
+
+            return null;
+        }
     }  
 }

@@ -1,4 +1,5 @@
-﻿using NuGet.CommandLine.Common;
+﻿using NuGet.Client;
+using NuGet.CommandLine.Common;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
 using NuGet.PackagingCore;
@@ -44,6 +45,8 @@ namespace NuGet.CommandLine.Commands
             var packageSourceProvider = new NuGet.Configuration.PackageSourceProvider(Settings);
             var sourceRepositoryProvider = new SourceRepositoryProvider(packageSourceProvider, ResourceProviders);
 
+            var primarySourceRepository = GetPrimarySourceRepository(Source, sourceRepositoryProvider);
+
             // BUGBUG: Check that the argument is always passed
             string packageId = Arguments[0];
             NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider, installPath);
@@ -53,11 +56,12 @@ namespace NuGet.CommandLine.Commands
 
             if (Version == null)
             {
-                packageManager.InstallPackageAsync(nugetProject, packageId, resolutionContext, new Common.Console()).Wait();
+                packageManager.InstallPackageAsync(nugetProject, packageId, resolutionContext, new Common.Console(), primarySourceRepository).Wait();
             }
             else
             {
-                packageManager.InstallPackageAsync(nugetProject, new PackageIdentity(packageId, new NuGetVersion(Version)), resolutionContext, new Common.Console()).Wait();
+                packageManager.InstallPackageAsync(nugetProject, new PackageIdentity(packageId, new NuGetVersion(Version)), resolutionContext,
+                    new Common.Console(), primarySourceRepository).Wait();
             }           
         }
 

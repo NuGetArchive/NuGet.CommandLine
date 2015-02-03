@@ -6111,4 +6111,7 @@ Oluşturma sırasında NuGet'in paketleri indirmesini önlemek için, Visual Stu
   <data name="PackageCommandEnabledRules" xml:space="preserve">
     <value>Enabled rules: {0}.</value>
   </data>
+  <data name="DownloadCommandBaseNoEnabledPackageSource" xml:space="preserve">
+    <value>No enabled package sources are available</value>
+  </data>
 </root>
