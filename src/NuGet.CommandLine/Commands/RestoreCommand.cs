@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 
 namespace NuGet.CommandLine.Commands
@@ -117,7 +118,7 @@ namespace NuGet.CommandLine.Commands
             DisplayExecutedTime(watch.Elapsed, "GetMissingPackages");
 
             watch.Restart();
-            PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, null, GetSourceRepositories(Source, sourceRepositoryProvider)).Wait();
+            PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, CancellationToken.None, null, GetSourceRepositories(Source, sourceRepositoryProvider)).Wait();
             watch.Stop();
             DisplayExecutedTime(watch.Elapsed, "RestorePackages");
         }

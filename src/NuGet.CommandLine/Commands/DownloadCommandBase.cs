@@ -69,6 +69,11 @@ namespace NuGet.CommandLine.Commands
                     }
                 }
             }
+            else
+            {
+                // Default to nupkg only
+                EffectivePackageSaveMode = PackageSaveModes.Nupkg;
+            }
         }  
 
         protected static SourceRepository GetPrimarySourceRepository(ICollection<string> sources,

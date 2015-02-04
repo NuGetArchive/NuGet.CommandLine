@@ -1,4 +1,5 @@
-﻿using NuGet.ProjectManagement;
+﻿using NuGet.Packaging;
+using NuGet.ProjectManagement;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -356,6 +357,12 @@ namespace NuGet.CommandLine.Common
         public FileConflictAction ResolveFileConflict(string message)
         {
             return FileConflictAction.IgnoreAll;
+        }
+
+        public NuGet.Packaging.PackageExtractionContext PackageExtractionContext
+        {
+            get;
+            set;
         }
     }
 }
