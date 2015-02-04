@@ -20,7 +20,7 @@ namespace NuGet.CommandLine.Commands
         {
             get { return _sources; }
         }
-        public override void ExecuteCommand()
+        public async override Task ExecuteCommand()
         {
             IEnumerable<SourceRepository> sourceRepository;
             if (Source.Any())
@@ -44,7 +44,7 @@ namespace NuGet.CommandLine.Commands
                 Console = Console
             };
 
-            selfUpdater.UpdateSelf();
+            await selfUpdater.UpdateSelf();
         }
     }
 }

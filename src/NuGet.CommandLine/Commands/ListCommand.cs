@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace NuGet.CommandLine.Commands
 {
@@ -27,7 +28,7 @@ namespace NuGet.CommandLine.Commands
         [Option(typeof(NuGetCommandResourceType), "ListCommandPrerelease")]
         public bool Prerelease { get; set; }
 
-        public override void ExecuteCommand()
+        public async override Task ExecuteCommand()
         {
             IEnumerable<SourceRepository> sourceRepository;
             string searchTerm = Arguments != null ? Arguments.FirstOrDefault() : null;
@@ -49,7 +50,7 @@ namespace NuGet.CommandLine.Commands
 
             foreach (var eachRepository in sourceRepository)
             {
-                var searchResource = eachRepository.GetResource<SimpleSearchResource>();
+                var searchResource = await eachRepository.GetResourceAsync<SimpleSearchResource>();
                 if (searchResource != null)
                 {
                     int page = 100;
@@ -57,7 +58,7 @@ namespace NuGet.CommandLine.Commands
 
                     do
                     {
-                        var packages = searchResource.Search(searchTerm, new SearchFilter() { IncludePrerelease = Prerelease, SupportedFrameworks = new string[0] }, skip, page, CancellationToken.None).Result;
+                        var packages = await searchResource.Search(searchTerm, new SearchFilter() { IncludePrerelease = Prerelease, SupportedFrameworks = new string[0] }, skip, page, CancellationToken.None);
                         skip += page;
                         if (!packages.Any()) break;
                         PrintPackages(packages);

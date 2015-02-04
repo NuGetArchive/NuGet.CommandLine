@@ -27,22 +27,22 @@ namespace NuGet.CommandLine.Common
         {
             _source = source;
         }
-        public void UpdateSelf()
+        public async Task UpdateSelf()
         {
             Assembly assembly = typeof(SelfUpdater).Assembly;
             var version = GetNuGetVersion(assembly) ?? new NuGetVersion(assembly.GetName().Version);
-            SelfUpdate(assembly.Location, version);
+            await SelfUpdate(assembly.Location, version);
         }
 
-        internal void SelfUpdate(string exePath, NuGetVersion version)
+        internal async Task SelfUpdate(string exePath, NuGetVersion version)
         {
             Console.WriteLine(LocalizedResourceManager.GetString("UpdateCommandCheckingForUpdates"), NuGetConstants.DefaultFeedUrl);
             var metadataResource = _source.GetResource<MetadataResource>();
             if (metadataResource != null)
             {
                 ResolutionContext resolutionContext = new ResolutionContext();
-                var latestVersionKeyPair = metadataResource.GetLatestVersions(new List<string>() { NuGetCommandLinePackageId },
-                    resolutionContext.IncludePrerelease, resolutionContext.IncludeUnlisted, CancellationToken.None).Result;
+                var latestVersionKeyPair = await metadataResource.GetLatestVersions(new List<string>() { NuGetCommandLinePackageId },
+                    resolutionContext.IncludePrerelease, resolutionContext.IncludeUnlisted, CancellationToken.None);
                 var lastetVersion = latestVersionKeyPair.FirstOrDefault().Value;
 
                 if (version >= lastetVersion)
@@ -56,7 +56,7 @@ namespace NuGet.CommandLine.Common
                     // Get NuGet.exe file
                     using (var targetPackageStream = new MemoryStream())
                     {
-                        PackageDownloader.GetPackageStream(_source, new PackageIdentity(NuGetCommandLinePackageId, lastetVersion), targetPackageStream);
+                        await PackageDownloader.GetPackageStream(_source, new PackageIdentity(NuGetCommandLinePackageId, lastetVersion), targetPackageStream);
                         // If for some reason this package doesn't have NuGet.exe then we don't want to use it
                         if (targetPackageStream == null)
                         {

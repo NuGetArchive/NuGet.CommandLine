@@ -9,6 +9,8 @@ using NuGet.Versioning;
 using System;
 using System.ComponentModel.Composition;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NuGet.CommandLine.Commands
 {
@@ -37,7 +39,7 @@ namespace NuGet.CommandLine.Commands
             DependencyBehavior = DependencyBehavior.Lowest;
         }
 
-        public override void ExecuteCommand()
+        public async override Task ExecuteCommand()
         {
             CalculateEffectivePackageSaveMode();
             string installPath = ResolveInstallPath();
@@ -56,12 +58,13 @@ namespace NuGet.CommandLine.Commands
 
             if (Version == null)
             {
-                packageManager.InstallPackageAsync(nugetProject, packageId, resolutionContext, new Common.Console(), primarySourceRepository).Wait();
+                await packageManager.InstallPackageAsync(nugetProject, packageId, resolutionContext, new Common.Console(),
+                    primarySourceRepository, null, CancellationToken.None);
             }
             else
             {
-                packageManager.InstallPackageAsync(nugetProject, new PackageIdentity(packageId, new NuGetVersion(Version)), resolutionContext,
-                    new Common.Console(), primarySourceRepository).Wait();
+                await packageManager.InstallPackageAsync(nugetProject, new PackageIdentity(packageId, new NuGetVersion(Version)), resolutionContext,
+                    new Common.Console(), primarySourceRepository, null, CancellationToken.None);
             }           
         }
 

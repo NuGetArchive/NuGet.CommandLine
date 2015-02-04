@@ -24,7 +24,7 @@ namespace NuGet.CommandLine.Commands
             set;
         }
 
-        public override void ExecuteCommand()
+        public override Task ExecuteCommand()
         {
             if (Settings == null)
             {
@@ -59,6 +59,8 @@ namespace NuGet.CommandLine.Commands
                     Console.WriteLine(value);
                 }
             }
+
+            return Task.FromResult(0);
         }
     }
 }

@@ -10,6 +10,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 
 namespace NuGet.CommandLine.Commands
@@ -73,7 +74,7 @@ namespace NuGet.CommandLine.Commands
             _outputOptOutMessage = true;
         }
 
-        public override void ExecuteCommand()
+        public async override Task ExecuteCommand()
         {
             CalculateEffectivePackageSaveMode();
             DetermineRestoreMode();
@@ -118,7 +119,7 @@ namespace NuGet.CommandLine.Commands
             DisplayExecutedTime(watch.Elapsed, "GetMissingPackages");
 
             watch.Restart();
-            PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, CancellationToken.None, null, GetSourceRepositories(Source, sourceRepositoryProvider)).Wait();
+            await PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, CancellationToken.None, null, GetSourceRepositories(Source, sourceRepositoryProvider));
             watch.Stop();
             DisplayExecutedTime(watch.Elapsed, "RestorePackages");
         }

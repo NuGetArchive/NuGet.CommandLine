@@ -96,7 +96,7 @@ namespace NuGet.CommandLine
                         getErrorMessage = e => e.ToString();
                     }
 
-                    command.Execute();
+                    command.Execute().Wait();
                 }
             }
             catch (AggregateException exception)

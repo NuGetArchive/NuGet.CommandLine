@@ -5,6 +5,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Threading.Tasks;
 
 
 namespace NuGet.CommandLine.Commands
@@ -54,7 +55,7 @@ namespace NuGet.CommandLine.Commands
             _helpUrl = helpUrl;
         }
 
-        public override void ExecuteCommand()
+        public override Task ExecuteCommand()
         {
             if (!String.IsNullOrEmpty(CommandName))
             {
@@ -72,6 +73,8 @@ namespace NuGet.CommandLine.Commands
             {
                 ViewHelp();
             }
+
+            return Task.FromResult(0);
         }
 
         public void ViewHelp()

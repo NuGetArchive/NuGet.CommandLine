@@ -10,6 +10,7 @@ using NuGet.Configuration;
 using System.Reflection;
 using NuGet.PackageManagement;
 using NuGet.Client;
+using System.Threading.Tasks;
 
 namespace NuGet.CommandLine.Commands
 {
@@ -71,7 +72,7 @@ namespace NuGet.CommandLine.Commands
             return true;
         }
 
-        public void Execute()
+        public async Task Execute()
         {
             if (Help)
             {
@@ -105,13 +106,13 @@ namespace NuGet.CommandLine.Commands
                         MachineWideSettings);
                 }
 
-                ExecuteCommand();
+                await ExecuteCommand();
                 watch.Stop();
                 DisplayExecutedTime(watch.Elapsed, CommandAttribute.CommandName);
             }
         }
 
-        public abstract void ExecuteCommand();
+        public abstract Task ExecuteCommand();
 
         protected void DisplayExecutedTime(TimeSpan elapsed, string executionName)
         {

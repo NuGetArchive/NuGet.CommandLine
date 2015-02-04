@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.Threading.Tasks;
 
 namespace NuGet.CommandLine
 {
@@ -10,7 +11,7 @@ namespace NuGet.CommandLine
 
         IList<string> Arguments { get; }
 
-        void Execute();
+        Task Execute();
 
         /// <summary>
         /// Returns a value indicating whether the specified option should be included in 
