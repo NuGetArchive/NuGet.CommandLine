@@ -6114,4 +6114,7 @@ Oluşturma sırasında NuGet'in paketleri indirmesini önlemek için, Visual Stu
   <data name="DownloadCommandBaseNoEnabledPackageSource" xml:space="preserve">
     <value>No enabled package sources are available</value>
   </data>
+  <data name="InstallCommandPackageIdMustBeProvided" xml:space="preserve">
+    <value>Package Id must be provided</value>
+  </data>
 </root>

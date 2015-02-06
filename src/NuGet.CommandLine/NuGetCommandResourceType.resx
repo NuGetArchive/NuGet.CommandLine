@@ -202,7 +202,7 @@ nuget push -?</value>
     <value>A list of packages sources to use for this command.</value>
   </data>
   <data name="InstallCommandUsageDescription" xml:space="preserve">
-    <value>Specify the id and optionally the version of the package to install. If a path to a packages.config file is used instead of an id, all the packages it contains are installed.</value>
+    <value>Specify the id and optionally the version of the package to install</value>
     <comment>Please don't localize "packages.config".</comment>
   </data>
   <data name="InstallCommandUsageExamples" xml:space="preserve">
@@ -214,7 +214,7 @@ nuget install ninject -o c:\foo</value>
     <comment>Please don't localize this string</comment>
   </data>
   <data name="InstallCommandUsageSummary" xml:space="preserve">
-    <value>packageId|pathToPackagesConfig [options]</value>
+    <value>packageId [options]</value>
   </data>
   <data name="InstallCommandVersionDescription" xml:space="preserve">
     <value>The version of the package to install.</value>

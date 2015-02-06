@@ -4507,6 +4507,15 @@ namespace NuGet.CommandLine {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Package Id must be provided.
+        /// </summary>
+        internal static string InstallCommandPackageIdMustBeProvided {
+            get {
+                return ResourceManager.GetString("InstallCommandPackageIdMustBeProvided", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Version string specified for package reference &apos;{0}&apos; is invalid..
         /// </summary>
         internal static string InstallCommandPackageReferenceInvalidVersion {

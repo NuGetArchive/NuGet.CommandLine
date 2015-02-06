@@ -52,7 +52,10 @@ namespace NuGet.CommandLine.Commands
             IEnumerable<SourceRepository> secondarySources;
             GetEffectiveSources(sourceRepositoryProvider, out primarySources, out secondarySources);
 
-            // BUGBUG: Check that the argument is always passed
+            if(Arguments.Count == 0)
+            {
+                throw new InvalidOperationException(NuGetResources.InstallCommandPackageIdMustBeProvided);
+            }
             string packageId = Arguments[0];
             NuGetPackageManager packageManager = new NuGetPackageManager(sourceRepositoryProvider, installPath);
             ResolutionContext resolutionContext = new ResolutionContext(dependencyBehavior: DependencyBehavior, includePrelease: Prerelease);
