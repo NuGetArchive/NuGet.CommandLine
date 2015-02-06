@@ -7,6 +7,7 @@ using NuGet.ProjectManagement;
 using NuGet.Resolver;
 using NuGet.Versioning;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.IO;
 using System.Threading;
@@ -47,7 +48,9 @@ namespace NuGet.CommandLine.Commands
             var packageSourceProvider = new NuGet.Configuration.PackageSourceProvider(Settings);
             var sourceRepositoryProvider = new SourceRepositoryProvider(packageSourceProvider, ResourceProviders);
 
-            var primarySourceRepository = GetPrimarySourceRepository(Source, sourceRepositoryProvider);
+            IEnumerable<SourceRepository> primarySources;
+            IEnumerable<SourceRepository> secondarySources;
+            GetEffectiveSources(sourceRepositoryProvider, out primarySources, out secondarySources);
 
             // BUGBUG: Check that the argument is always passed
             string packageId = Arguments[0];
@@ -59,12 +62,12 @@ namespace NuGet.CommandLine.Commands
             if (Version == null)
             {
                 await packageManager.InstallPackageAsync(nugetProject, packageId, resolutionContext, new Common.Console(),
-                    primarySourceRepository, null, CancellationToken.None);
+                    primarySources, secondarySources, CancellationToken.None);
             }
             else
             {
                 await packageManager.InstallPackageAsync(nugetProject, new PackageIdentity(packageId, new NuGetVersion(Version)), resolutionContext,
-                    new Common.Console(), primarySourceRepository, null, CancellationToken.None);
+                    new Common.Console(), primarySources, secondarySources, CancellationToken.None);
             }           
         }
 

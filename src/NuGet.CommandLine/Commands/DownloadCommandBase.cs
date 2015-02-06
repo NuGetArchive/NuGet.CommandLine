@@ -76,41 +76,33 @@ namespace NuGet.CommandLine.Commands
             }
         }  
 
-        protected static SourceRepository GetPrimarySourceRepository(ICollection<string> sources,
-            SourceRepositoryProvider sourceRepositoryProvider)
+        protected void GetEffectiveSources(SourceRepositoryProvider sourceRepositoryProvider, out IEnumerable<SourceRepository> primarySources, out IEnumerable<SourceRepository> secondarySources)
         {
-            // TODO: Consider adding support for multiple primary repositories
-            string primarySource = null;
-            SourceRepository primarySourceRepository = null;
-            if(sources != null && sources.Any())
+            var enabledConfiguredSources = sourceRepositoryProvider.GetRepositories().Where(s => s.PackageSource.IsEnabled);
+            var sourceRepositoriesFromSourceSwitch = GetSourceRepositoriesFromSourceSwitch(sourceRepositoryProvider);
+            if (sourceRepositoriesFromSourceSwitch != null && sourceRepositoriesFromSourceSwitch.Any())
             {
-                primarySource = sources.First();
-            }
-
-            if(!String.IsNullOrEmpty(primarySource))
-            {
-                primarySourceRepository = sourceRepositoryProvider.CreateRepository(new Configuration.PackageSource(primarySource));
+                primarySources = sourceRepositoriesFromSourceSwitch;
+                secondarySources = enabledConfiguredSources;
             }
             else
             {
-                primarySourceRepository = sourceRepositoryProvider.GetRepositories().Where(s => s.PackageSource.IsEnabled).FirstOrDefault();
+                primarySources = enabledConfiguredSources;
+                secondarySources = Enumerable.Empty<SourceRepository>();
             }
 
-            if(primarySourceRepository == null)
+            if(primarySources == null || !primarySources.Any())
             {
                 throw new InvalidOperationException(NuGetResources.DownloadCommandBaseNoEnabledPackageSource);
             }
-
-            return primarySourceRepository;
         }
 
-        protected static IEnumerable<SourceRepository> GetSourceRepositories(ICollection<string> sources,
-            SourceRepositoryProvider sourceRepositoryProvider)
+        protected IEnumerable<SourceRepository> GetSourceRepositoriesFromSourceSwitch(SourceRepositoryProvider sourceRepositoryProvider)
         {
-            if (sources != null && sources.Any())
+            if (Source != null && Source.Any())
             {
                 List<SourceRepository> sourceRepositories = new List<SourceRepository>();
-                foreach(var source in sources)
+                foreach (var source in Source)
                 {
                     sourceRepositories.Add(sourceRepositoryProvider.CreateRepository(new NuGet.Configuration.PackageSource(source)));
                 }

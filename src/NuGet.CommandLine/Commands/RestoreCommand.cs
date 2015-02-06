@@ -119,7 +119,9 @@ namespace NuGet.CommandLine.Commands
             DisplayExecutedTime(watch.Elapsed, "GetMissingPackages");
 
             watch.Restart();
-            await PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, CancellationToken.None, null, GetSourceRepositories(Source, sourceRepositoryProvider));
+            // If sourceRepositories parameter below is null, then the sourceRepositories from the SourceRepositoryProvider in NuGetPackageManager will be used
+            await PackageRestoreManager.RestoreMissingPackages(nuGetPackageManager, missingPackages, Console, CancellationToken.None,
+                packageRestoredEvent: null, sourceRepositories: GetSourceRepositoriesFromSourceSwitch(sourceRepositoryProvider));
             watch.Stop();
             DisplayExecutedTime(watch.Elapsed, "RestorePackages");
         }
