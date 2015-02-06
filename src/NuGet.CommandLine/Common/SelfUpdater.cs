@@ -56,7 +56,7 @@ namespace NuGet.CommandLine.Common
                     // Get NuGet.exe file
                     using (var targetPackageStream = new MemoryStream())
                     {
-                        await PackageDownloader.GetPackageStream(_source, new PackageIdentity(NuGetCommandLinePackageId, lastetVersion), targetPackageStream);
+                        await PackageDownloader.GetPackageStream(_source, new PackageIdentity(NuGetCommandLinePackageId, lastetVersion), targetPackageStream, CancellationToken.None);
                         // If for some reason this package doesn't have NuGet.exe then we don't want to use it
                         if (targetPackageStream == null)
                         {
