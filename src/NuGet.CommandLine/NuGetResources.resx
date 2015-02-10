@@ -1752,7 +1752,7 @@ To prevent NuGet from downloading packages during build, open the Visual Studio 
     <value>Tous les packages répertoriés dans {0} sont déjà installés.</value>
   </data>
   <data name="InstallCommandNothingToInstall_ita" xml:space="preserve">
-    <value>Tutti i pacchetti elencati in {0}sono già installati.</value>
+    <value>Tutti i pacchetti elencati in {0} sono già installati.</value>
   </data>
   <data name="InstallCommandNothingToInstall_jpn" xml:space="preserve">
     <value>{0} に含まれるすべてのパッケージは、既にインストールされています。</value>
