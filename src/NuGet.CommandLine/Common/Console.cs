@@ -364,5 +364,11 @@ namespace NuGet.CommandLine.Common
             get;
             set;
         }
+
+        public ISourceControlManagerProvider SourceControlManagerProvider
+        {
+            get;
+            set;
+        }
     }
 }
