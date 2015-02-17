@@ -370,5 +370,11 @@ namespace NuGet.CommandLine.Common
             get;
             set;
         }
+
+        public ExecutionContext ExecutionContext
+        {
+            get;
+            set;
+        }
     }
 }
