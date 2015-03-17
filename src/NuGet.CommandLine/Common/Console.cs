@@ -346,6 +346,11 @@ namespace NuGet.CommandLine.Common
             }
         }
 
+        public void ReportError(string message)
+        {
+            Log(MessageLevel.Error, message, new object[0]);
+        }
+
         public void Log(MessageLevel level, string message, params object[] args)
         {
             var oldColor = System.Console.ForegroundColor;
