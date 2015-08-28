@@ -8,10 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
+using System.ComponentModel.Composition.Primitives;
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace NuGet.CommandLine
 {
@@ -28,8 +30,6 @@ namespace NuGet.CommandLine
 
         [Import]
         public ICommandManager Manager { get; set; }
-
-     
 
         /// <summary>
         /// Flag meant for unit tests that prevents command line extensions from being loaded.
@@ -158,20 +158,123 @@ namespace NuGet.CommandLine
 
         private void Initialize(IConsole console)
         {
-            using (var catalog = new AggregateCatalog())
-            {
-                catalog.Catalogs.Add(new AssemblyCatalog(GetType().Assembly));
-                catalog.Catalogs.Add(new DirectoryCatalog(Environment.CurrentDirectory, "*.dll"));
-                
-                if (!IgnoreExtensions)
-                {
-                    AddExtensionsToCatalog(catalog, console);
-                }
+            var assemblies = new List<string>();
+            assemblies.Add(GetType().Assembly.Location);
+            assemblies.AddRange(Directory.EnumerateFiles(AppDomain.CurrentDomain.BaseDirectory, "*.dll"));
 
-                var container = new CompositionContainer(catalog);
-                container.ComposeExportedValue<IConsole>(console);
-                container.ComposeParts(this);
+            if (!IgnoreExtensions)
+            {
+                AddExtensionsToCatalog(assemblies, console);
             }
+
+            var catalog = CreateCatalog(assemblies, console);
+            var container = new CompositionContainer(catalog);
+            container.ComposeExportedValue<IConsole>(console);
+            container.ComposeParts(this);
+        }
+
+
+        /// <summary>
+        /// Creates a catalog for the assemblies
+        /// </summary>
+        /// <param name="assemblyFiles">the assemblies to include in the catalog</param>
+        /// <returns>the catalog containing parts from the assemblies</returns>
+        public static ComposablePartCatalog CreateCatalog(IReadOnlyList<string> assemblyFiles, IConsole console)
+        {
+            AggregateCatalog result = new AggregateCatalog();
+            var nameSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var filename in assemblyFiles)
+            {
+                // skip files we've already seen
+                if (!nameSet.Add(filename))
+                {
+                    continue;
+                }
+                var assembly = GetOrLoad(filename, console);
+                if (assembly != null)
+                {
+                    var assemblyCatalog = CreateCatalog(assembly, console);
+                    if (assemblyCatalog != null)
+                    {
+                        result.Catalogs.Add(assemblyCatalog);
+                    }
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// Creates a catalog for the given assembly
+        /// </summary>
+        /// <param name="assembly">the assembly</param>
+        /// <returns>the catalog containing parts from the assembly</returns>
+        private static ComposablePartCatalog CreateCatalog(Assembly assembly, IConsole console)
+        {
+            IEnumerable<Type> types;
+
+            try
+            {
+                ComposablePartCatalog result = new AssemblyCatalog(assembly);
+
+                if (result == null)
+                {
+                    return null;
+                }
+                // Trigger the loading of the assembly.  This will catch on class of error where
+                // other supporting assemblies are missing.
+                result.Any();
+                return result;
+            }
+            catch (ReflectionTypeLoadException e)
+            {
+                types = e.Types;
+                console.WriteWarning(e.Message);
+            }
+
+            // In the event there was a problem press on and create a catalog with all types we could
+            // load.  Note however that we have to go further and try to get the imports/exports as doing
+            // that will completely exercise the MEF loading pass.  Any types that can load all their imports
+            // and exports are added to a catalog and included in the container.
+            var loadableTypes = new List<Type>();
+            foreach (var type in types.Where(t => t != null))
+            {
+                try
+                {
+                    foreach (var tempCatalog in new TypeCatalog(type))
+                    {
+                        // Trigger loading exceptions now rather than later.
+                        var dummy1 = tempCatalog.ExportDefinitions.Any();
+                        var dummy2 = tempCatalog.ImportDefinitions.Any();
+                    }
+                    loadableTypes.Add(type);
+                }
+                catch (Exception e)
+                {
+                    e.RethrowIfCritical();
+                    // In most cases this will be irrelevant problems but it is possible that there is a real problem.
+                    console.WriteWarning(e.Message);
+                }
+            }
+
+            return new TypeCatalog(loadableTypes);
+        }
+
+        private static Assembly GetOrLoad(string assembly, IConsole console)
+        {
+            try
+            {
+                AssemblyName name = AssemblyName.GetAssemblyName(assembly);
+                name.CodeBase = assembly;
+                return Assembly.Load(name);
+            }
+            catch (Exception e)
+            {
+                e.RethrowIfCritical();
+                console.WriteWarning(e.Message);
+            }
+            return null;
         }
 
         [SuppressMessage("Microsoft.Design", "CA1031:DoNotCatchGeneralExceptionTypes", Justification = "We don't want to block the exe from usage if anything failed")]
@@ -198,7 +301,7 @@ namespace NuGet.CommandLine
                    command.Arguments.Count <= attribute.MaxArgs;
         }
 
-        private static void AddExtensionsToCatalog(AggregateCatalog catalog, IConsole console)
+        private static void AddExtensionsToCatalog(List<string> assemblies, IConsole console)
         {
             IEnumerable<string> directories = new[] { ExtensionsDirectoryRoot };
 
@@ -215,7 +318,7 @@ namespace NuGet.CommandLine
                 if (Directory.Exists(directory))
                 {
                     files = Directory.EnumerateFiles(directory, "*.dll", SearchOption.AllDirectories);
-                    RegisterExtensions(catalog, files, console);
+                    RegisterExtensions(assemblies, files, console);
                 }
             }
 
@@ -224,16 +327,16 @@ namespace NuGet.CommandLine
             // Consequently, we'll use a convention - only binaries ending in the name Extensions would be loaded. 
             var nugetDirectory = Path.GetDirectoryName(typeof(Program).Assembly.Location);
             files = Directory.EnumerateFiles(nugetDirectory, "*Extensions.dll");
-            RegisterExtensions(catalog, files, console);
+            RegisterExtensions(assemblies, files, console);
         }
 
-        private static void RegisterExtensions(AggregateCatalog catalog, IEnumerable<string> enumerateFiles, IConsole console)
+        private static void RegisterExtensions(List<string> assemblies, IEnumerable<string> enumerateFiles, IConsole console)
         {
             foreach (var item in enumerateFiles)
             {
                 try
                 {
-                    catalog.Catalogs.Add(new AssemblyCatalog(item));
+                    assemblies.Add(item);
                 }
                 catch (BadImageFormatException ex)
                 {

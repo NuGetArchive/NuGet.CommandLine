@@ -13,7 +13,6 @@
 [Rr]eleases/
 x64/
 x86/
-build/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -134,6 +133,8 @@ publish/
 *.nupkg
 # The packages folder can be ignored because of Package Restore
 **/packages/*
+**/.nuget/*
+**/nupkgs/*
 # except build/, which is used as an MSBuild target.
 !**/packages/build/
 # If using the old MSBuild-Integrated Package Restore, uncomment this:

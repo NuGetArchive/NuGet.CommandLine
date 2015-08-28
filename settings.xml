@@ -1,0 +1,6 @@
+<nupkgs>
+	<nupkg id="NuGet.CommandLine">
+		<csprojPath>\src\NuGet.CommandLine\NuGet.CommandLine.csproj</csprojPath>
+		<exeName>NuGet.exe</exeName>
+	</nupkg>
+</nupkgs>
